@@ -15,6 +15,6 @@ public class PublicController {
 
     @PostMapping
     public void addUserEntry(@RequestBody UserObject newUser) {
-        userService.addUserEntry(newUser);
+        userService.addNewUserEntry(newUser);
     }
 }

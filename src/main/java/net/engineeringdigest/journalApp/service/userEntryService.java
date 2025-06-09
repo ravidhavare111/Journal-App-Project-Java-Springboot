@@ -22,10 +22,14 @@ public class userEntryService {
 
     private static final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public void addUserEntry(UserObject newUser) {
+    public void addNewUserEntry(UserObject newUser) {
         newUser.setPassword(encoder.encode(newUser.getPassword()));
         newUser.setRoles(Arrays.asList("Admin"));
         EntryUserRepository.save(newUser);
+    }
+
+    public void addUserEntry(UserObject User) {
+        EntryUserRepository.save(User);
     }
 
     public List<UserObject> getAllUserEntries() {
@@ -53,5 +57,9 @@ public class userEntryService {
         String userName = authentication.getName();
         EntryUserRepository.deleteByUserName(userName);
         return true;
+    }
+
+    public UserObject findByUserName(String userName) {
+        return EntryUserRepository.findByUserName(userName);
     }
 }

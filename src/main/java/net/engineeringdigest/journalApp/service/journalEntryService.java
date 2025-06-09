@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class journalEntryService {
@@ -28,7 +29,6 @@ public class journalEntryService {
             JournalObject journal = EntryRepository.save(newJournal);
             UserObject user = userEntryService.getUserEntry(userName);
             user.getJournalList().add(journal);
-//            user.setUserName(null);
             userEntryService.addUserEntry(user);
         }
         catch (Exception e){
@@ -41,9 +41,12 @@ public class journalEntryService {
         return EntryRepository.findAll();
     }
 
+
+
     public JournalObject getJournalEntry(String userName, ObjectId id) {
 
         UserObject user = userEntryService.getUserEntry(userName);
+//        JournalObject oldJournal = EntryRepository.findById(id).orElse(null);
         List<JournalObject> temp = user.getJournalList();
         for(JournalObject J : temp){
             if(J.getId().equals(id)){
@@ -52,6 +55,23 @@ public class journalEntryService {
         }
         return null;
 //        return EntryRepository.findById(id).orElse(null);
+    }
+
+
+    public JournalObject getJournalEntryById(ObjectId id) {
+        return EntryRepository.findById(id).orElse(null);
+    }
+
+    public boolean updateJournalEntry(ObjectId id, JournalObject newJournal) {
+        JournalObject oldJournal = EntryRepository.findById(id).orElse(null);
+
+        if(oldJournal != null) {
+            oldJournal.setTitle(newJournal.getTitle() != null && !newJournal.getTitle().isEmpty() ? newJournal.getTitle() : oldJournal.getTitle());
+            oldJournal.setContent(newJournal.getContent() != null && !newJournal.getContent().isEmpty() ? newJournal.getContent() : oldJournal.getContent());
+            EntryRepository.save(oldJournal);
+            return true;
+        }
+        return false;
     }
 
     public boolean deleteJournalEntry(String userName, ObjectId id) {
@@ -68,28 +88,7 @@ public class journalEntryService {
         return false;
     }
 
-    public boolean updateJournalEntry(ObjectId id, JournalObject newJournal) {
-        JournalObject oldJournal = EntryRepository.findById(id).orElse(null);
-        if(oldJournal != null){
-            oldJournal.setTitle(newJournal.getTitle() != null && newJournal.getTitle() != "" ? newJournal.getTitle() : oldJournal.getTitle());
-            oldJournal.setContent(newJournal.getContent() != null && newJournal.getContent() != "" ? newJournal.getContent() : oldJournal.getContent());
 
-            EntryRepository.save(oldJournal);
-            return true;
-        }
-
-//        if(oldJournal != null){
-//            if( newJournal.getTitle() != null && newJournal.getTitle() != "" && !oldJournal.getTitle().equals(newJournal.getTitle())){
-//                oldJournal.setTitle(newJournal.getTitle());
-//            }
-//            if(newJournal.getContent() != null && newJournal.getContent() != "" && !oldJournal.getContent().equals(newJournal.getContent())){
-//                oldJournal.setContent(newJournal.getContent());
-//            }
-//        }
-
-        return false;
-
-    }
 
 
 
